@@ -5,8 +5,8 @@ const authRouter = express.Router();
 const jsonBodyParser = express.json();
 
 authRouter.post('/', jsonBodyParser, (req, res, next) => {
-    const { user_email, user_password } = req.body;
-    const loginUser = { user_email, user_password };
+    const { user_name, user_password } = req.body;
+    const loginUser = { user_name, user_password };
 
     for (const [key, value] of Object.entries(loginUser))
         if (value == null)
@@ -14,7 +14,7 @@ authRouter.post('/', jsonBodyParser, (req, res, next) => {
                 error: `Missing '${key} in request body`
             });
 
-    AuthService.getUserWithUserEmail(req.app.get('db'), loginUser.user_email)
+    AuthService.getUserWithUserEmail(req.app.get('db'), loginUser.user_name)
             .then(user => {
                 if (!user)
                     return res.status(400).json({
@@ -31,11 +31,12 @@ authRouter.post('/', jsonBodyParser, (req, res, next) => {
                                 error: 'Incorrect User Email or Password'
                             });
 
-                        const sub = user.user_email;
+                        const sub = user.user_name;
                         const payload = { user_id: user.id };
 
                         res.send({
-                            authToken: AuthService.createJwt(sub, payload)
+                            authToken: AuthService.createJwt(sub, payload),
+                            userid: user.id
                         });
 
                     });

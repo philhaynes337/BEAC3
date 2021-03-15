@@ -8,6 +8,7 @@ const validateBearerToken = require('./validate-bearer-token');
 // put require routers here const router = require('pathtorouter');
 const jwtAuthRoute = require('./routers/jwtAuth');
 const jwtLoginRoute = require('./auth/auth-router');
+const LoggedIn = require('./routers/loggedin');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(validateBearerToken);
 //start app.use routers app.use('/path/website', const=here)
 app.use('/register', jwtAuthRoute);
 app.use('/login', jwtLoginRoute);
+app.use('/loggedin', LoggedIn);
 
 
 app.get('/', (req, res) => {
