@@ -9,25 +9,30 @@ const jsonParser = express.json();
 jwtRouter
     .route('/:user_name')
     .all((req, res, next) => {
+
         const { user_name } = req.params
-        
+
         jwtAuthService.getByUserName(
             req.app.get('db'),
-            user_name
-            
-        )
-        .then(user => {
+            user_name     
+        )       
+         .then(user => {       
+
             if (!user) {
-                return res.status(404).json({
-                    error: { message: `User Not Found`}
-                })
+                return res.status(404).send('User Not Found')
             }
             res.user = user
-            next()
+            res.json(res.user)
+
+        }) 
+
+        .catch(err => {
+
+            res.status(404).send('error - user not found')
         })
-        .catch(next)
     })
-    .get((req, res) => {
+    .get((req, res, next) => {
+        console.log('got to the get')
         res.json(res.user)
     })
 
@@ -50,7 +55,7 @@ jwtRouter
             updateUser,
             updateData
         )
-        .then(res.send('Observation Updated'))
+        .then(res.status(200).send('Observation Updated'))
         .catch(error => {
             console.log(error)
             res
@@ -73,7 +78,7 @@ jwtRouter
                 delObs,
                 user
             )
-            .then(res.send('Observation Deleted'))
+            .then(res.status(204).send('Observation Deleted'))
             .catch(error => {
                 console.log(error)
                 res
@@ -89,6 +94,13 @@ jwtRouter
 
             const { user_email, obs_date_time, icao, user, wind, vis, clouds, wx, tmp, dp, remarks } = req.body;
             const newObs = { user_email, obs_date_time, icao, wind, vis, clouds, wx, tmp, dp, remarks }
+
+            for (const [key, value] of Object.entries(newObs))
+                if (value == null)
+                    return res.status(400).json({
+                        error: { message: `Missing ${key}`}
+                    })
+
 
             jwtAuthService.addObsData(
                 req.app.get('db'),
@@ -110,15 +122,7 @@ jwtRouter
 jwtRouter
     .route('/')
     .get((req, res, next) => {
-        jwtAuthService.getLoggedInUserInfo(
-        req.app.get('db')
-        )
-    .then(loggedInUser => {
-        res.json(loggedInUser)
-        console.log(loggedInUser)
-
-    })
-    .catch(next)
+        res.send('End Point').status(201)
     })
 
 

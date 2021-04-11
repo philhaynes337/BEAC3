@@ -80,26 +80,12 @@ jwtRouter
             user_email
         )
         .then(user => {
-            res.json(user)
+            res.status(201).json(user)
         })
         .catch(next)
 
-        // jwtAuthService.insertIntJwtUserData(
-        //     req.app.get('db'),
-        //     user_email,
-        //     user_name
-        // )
-        // .then()
-        // .catch(next)
     
     });
 
-    // jwtRouter.post('/refresh', requireAuth, (req, res) => {
-    //     const sub = req.user_email
-    //     const payload = { user_email: req.user_email}
-    //     res.send({
-    //         authToken: jwtAuthService.createJwt(sub, payload),
-    //     })
-    // })
 
     module.exports = jwtRouter
